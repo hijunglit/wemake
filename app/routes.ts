@@ -4,7 +4,7 @@ export default [
     index("common/pages/home-page.tsx"),
     ...prefix("/products", [
         index("features/products/pages/products-page.tsx"),
-        ...prefix("/leaderboard", [
+        ...prefix("/leaderboards", [
             index("features/products/pages/leaderboard-page.tsx"),
             route("/yearly/:year", "features/products/pages/yearly-leaderboard-page.tsx"),
             route("/monthly/:year/:month", "features/products/pages/monthly-leaderboard-page.tsx"),
