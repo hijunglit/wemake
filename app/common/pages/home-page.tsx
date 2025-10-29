@@ -1,4 +1,3 @@
-import { index } from "@react-router/dev/routes"; // or "@remix-run/react" depending on context
 import { ProductCard } from "~/features/products/components/product-card"
 import { Button } from "../components/ui/button";
 import { Link } from "react-router";
@@ -27,15 +26,15 @@ export default function HomePage() {
                         <Link to="/products/leaderboard">Explore all products &rarr;</Link>
                     </Button>
                 </div>
-                    {Array.from({ length: 10 }).map(() => (
-                        <ProductCard
-                        id={`productId-${index}`}
-                        name="productName"
-                        description="Product Description"
-                        commentsCount={12}
-                        viewsCount={12}
-                        votesCount={120}
-                    /> 
+                {Array.from({ length: 10 }).map((_, index) => (
+                    <ProductCard
+                    id={`productId-${index}`}
+                    name="productName"
+                    description="Product Description"
+                    commentsCount={12}
+                    viewsCount={12}
+                    votesCount={120}
+                /> 
                 ))}
             </div>
             <div className="grid grid-cols-3 gap-4">
