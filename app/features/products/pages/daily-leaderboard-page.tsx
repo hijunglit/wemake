@@ -11,18 +11,18 @@ const paramsSchema = z.object({
   year: z.coerce.number(),
   month: z.coerce.number(),
   day: z.coerce.number(),
-})
+});
 
-export const loader = ({params}: Route.LoaderArgs) => {
-  const { success, data:parsedData } = paramsSchema.safeParse(params);
+export const loader = ({ params }: Route.LoaderArgs) => {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data(
       {
         error_code: "Invalid params",
         message: "Invalid params",
       },
-      {status: 400},
-    )
+      { status: 400 }
+    );
   }
   const date = DateTime.fromObject(parsedData).setZone("Asia/Seoul");
   if (!date.isValid) {
@@ -31,8 +31,8 @@ export const loader = ({params}: Route.LoaderArgs) => {
         error_code: "400",
         message: "date is invalid",
       },
-      {status: 400},
-    )
+      { status: 400 }
+    );
   }
   const today = DateTime.now().setZone("Asia/Seoul").startOf("day");
   if (date > today) {
@@ -41,13 +41,13 @@ export const loader = ({params}: Route.LoaderArgs) => {
         error_code: "400",
         message: "future date",
       },
-      {status: 400},
-    )
+      { status: 400 }
+    );
   }
   return {
     ...parsedData,
-  }
-}
+  };
+};
 
 export default function DailyLeaderboardPage({
   loaderData,
@@ -56,26 +56,32 @@ export default function DailyLeaderboardPage({
     year: loaderData.year,
     month: loaderData.month,
     day: loaderData.day,
-  })
+  });
   const previousDay = urlDate.minus({ day: 1 });
   const nextDay = urlDate.plus({ day: 1 });
   const isToday = urlDate.equals(DateTime.now().startOf("day"));
   return (
     <div className="space-y-10">
-      <Hero title={`The best products of ${urlDate.toLocaleString(DateTime.DATETIME_MED)}`} />
+      <Hero
+        title={`The best products of ${urlDate.toLocaleString(DateTime.DATETIME_MED)}`}
+      />
       <div className="flex items-center justify-center gap-2">
         <Button variant="secondary" asChild>
-          <Link to={`/products/leaderboards/daily/${previousDay.year}/${previousDay.month}/${previousDay.day}`}>
+          <Link
+            to={`/products/leaderboards/daily/${previousDay.year}/${previousDay.month}/${previousDay.day}`}
+          >
             &larr;{previousDay.toLocaleString(DateTime.DATE_SHORT)}
           </Link>
         </Button>
         {!isToday ? (
           <Button variant="secondary" asChild>
-            <Link to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}>
+            <Link
+              to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}
+            >
               {nextDay.toLocaleString(DateTime.DATE_SHORT)}&rarr;
             </Link>
           </Button>
-        ): null}
+        ) : null}
       </div>
       <div className="space-y-10 w-full max-w-screen-md mx-auto">
         {Array.from({ length: 10 }).map((_, index) => (
@@ -86,7 +92,7 @@ export default function DailyLeaderboardPage({
             commentsCount={12}
             viewsCount={12}
             votesCount={120}
-          /> 
+          />
         ))}
       </div>
       <ProductPagination totalPages={10} />
@@ -97,11 +103,13 @@ export default function DailyLeaderboardPage({
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
     return (
-      <div>{error.data.message} / {error.data.error_code}</div>
-    )
+      <div>
+        {error.data.message} / {error.data.error_code}
+      </div>
+    );
   }
   if (error instanceof Error) {
-    return <div>{ error.message }</div>
+    return <div>{error.message}</div>;
   }
-  return <div>Unknown error</div>
+  return <div>Unknown error</div>;
 }
