@@ -9,7 +9,7 @@ import { Button } from "~/common/components/ui/button";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: "Search Products | ProductHunt Clone" },
+    { title: "Search Products | wemake" },
     { name: "description", content: "Search for products" },
   ];
 };
