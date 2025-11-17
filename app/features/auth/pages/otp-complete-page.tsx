@@ -1,17 +1,21 @@
-import { Button } from "~/common/components/ui/button";
-import type { Route } from "./+types/login-page";
-import { Form, Link } from "react-router";
+import { Form } from "react-router";
+import type { Route } from "./+types/otp-complete-page";
 import InputPair from "~/common/components/input-pair";
-import AuthButtons from "../components/auth-buttons";
+import { Button } from "~/common/components/ui/button";
 
-export default function LoginPage() {
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Verify OTP | wemake" }];
+};
+export default function OtpPage() {
   return (
     <div className="flex flex-col relative items-center justify-center h-full">
-      <Button variant={"ghost"} asChild className="absolute right-8 top-8">
-        <Link to="/auth/join">Join</Link>
-      </Button>
       <div className="flex flex-col items-center justify-center w-full max-w-md gap-10">
-        <h1 className="text-2xl font-semibold">Log in to your account</h1>
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold">Confirm OTP</h1>
+          <p className="text-sm text-muted-foreground">
+            Enter the OTP code sent to your email address.
+          </p>
+        </div>
         <Form className="w-full space-y-5">
           <InputPair
             id="email"
@@ -23,19 +27,18 @@ export default function LoginPage() {
             placeholder="i.e wemake@gmail.com"
           />
           <InputPair
-            id="password"
-            label="Password"
-            description="Enter your password"
-            name="password"
+            id="otp"
+            label="OTP"
+            description="Enter your email"
+            name="otp"
             required
-            type="password"
-            placeholder="********"
+            type="number"
+            placeholder="i.e 1234"
           />
           <Button type="submit" className="w-full">
             Log in
           </Button>
         </Form>
-        <AuthButtons />
       </div>
     </div>
   );
