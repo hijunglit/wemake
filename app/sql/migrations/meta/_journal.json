@@ -8,6 +8,13 @@
       "when": 1763549560957,
       "tag": "0000_broken_jocasta",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764229457309,
+      "tag": "0001_flat_power_man",
+      "breakpoints": true
     }
   ]
 }
