@@ -15,6 +15,27 @@
       "when": 1764309129829,
       "tag": "0001_sharp_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1764311582894,
+      "tag": "0002_same_titania",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1764315401264,
+      "tag": "0003_brown_celestials",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1764315493170,
+      "tag": "0004_stiff_jimmy_woo",
+      "breakpoints": true
     }
   ]
 }
