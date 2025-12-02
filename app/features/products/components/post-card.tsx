@@ -5,20 +5,24 @@ import {
   CardHeader,
   CardTitle,
 } from "~/common/components/ui/card";
-import { Avatar, AvatarImage } from "~/common/components/ui/avatar";
-import { AvatarFallback } from "@radix-ui/react-avatar";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "~/common/components/ui/avatar";
 import { Button } from "~/common/components/ui/button";
 import { ChevronUpIcon, DotIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
+import { DateTime } from "luxon";
 
 interface PostCardProps {
-  id: string;
+  id: number;
   title: string;
   author: string;
-  authorAvatarUrl: string;
+  authorAvatarUrl: string | null;
   category: string;
-  postedAt: string;
-  expended?: boolean;
+  postedAt: Date;
+  expanded?: boolean;
   votesCount?: number;
 }
 
@@ -29,18 +33,18 @@ export function PostCard({
   authorAvatarUrl,
   category,
   postedAt,
-  expended = false,
+  expanded = false,
   votesCount = 0,
 }: PostCardProps) {
   return (
     <Link to={`/community/${id}`} className="block">
       <Card
         className={cn(
-          "bg-transparent hover:bg-primary/20 transition-colors",
-          expended ? "flex flex-row items-center justify-between" : ""
+          "bg-transparent hover:bg-card/50 transition-colors",
+          expanded ? "flex flex-row items-center justify-between" : ""
         )}
       >
-        <CardHeader className="flex flex-row items-center gap-2">
+        <CardHeader className="flex flex-row items-center gap-2 w-full">
           <Avatar className="size-14">
             <AvatarFallback>{author[0]}</AvatarFallback>
             {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
@@ -52,19 +56,17 @@ export function PostCard({
                 {author} on {category}
               </span>
               <DotIcon className="w-4 h-4" />
-              <span>{postedAt}</span>
+              <span>{DateTime.fromJSDate(postedAt).toRelative()}</span>
             </div>
           </div>
         </CardHeader>
-        {!expended && (
+        {!expanded && (
           <CardFooter className="flex justify-end">
-            <Button variant="link" asChild>
-              <Link to={`/community/${id}`}>Reply &rarr;</Link>
-            </Button>
+            <Button variant="link">Reply &rarr;</Button>
           </CardFooter>
         )}
-        {expended && (
-          <CardFooter className="flex justify-end pb-0">
+        {expanded && (
+          <CardFooter className="flex justify-end  pb-0">
             <Button variant="outline" className="flex flex-col h-14">
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>{votesCount}</span>
