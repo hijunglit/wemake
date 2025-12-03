@@ -21,7 +21,7 @@ interface PostCardProps {
   author: string;
   authorAvatarUrl: string | null;
   category: string;
-  postedAt: Date;
+  postedAt: string;
   expanded?: boolean;
   votesCount?: number;
 }
@@ -56,7 +56,8 @@ export function PostCard({
                 {author} on {category}
               </span>
               <DotIcon className="w-4 h-4" />
-              <span>{DateTime.fromJSDate(postedAt).toRelative()}</span>
+              {/* ISO형식은 postgreSQL에서 DATE를 저장하는 방식이다. */}
+              <span>{DateTime.fromISO(postedAt).toRelative()}</span>
             </div>
           </div>
         </CardHeader>
