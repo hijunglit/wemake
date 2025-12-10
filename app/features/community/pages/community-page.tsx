@@ -21,10 +21,7 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = async () => {
-  // const posts = await getPosts();
-  // const [topics, posts] = await Promise.all([getTopics, getPosts]);
-  const topics = await getTopics();
-  const posts = getPosts();
+  const [topics, posts] = await Promise.all([getTopics(), getPosts()]);
   return { topics, posts };
 };
 
