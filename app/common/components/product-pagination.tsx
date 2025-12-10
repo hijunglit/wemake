@@ -47,7 +47,7 @@ export default function ProductPagination({
             </>
           )}
           <PaginationItem>
-            <PaginationLink to={`page=${page}`} isActive>
+            <PaginationLink to={`?page=${page}`} isActive>
               {page}
             </PaginationLink>
           </PaginationItem>

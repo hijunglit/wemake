@@ -6,6 +6,8 @@ import { Hero } from "~/common/components/hero";
 import { ProductCard } from "../components/product-card";
 import { Button } from "~/common/components/ui/button";
 import ProductPagination from "~/common/components/product-pagination";
+import { getProductPagesByDateRange, getProductsByDateRange } from "../queries";
+import { PAGE_SIZE } from "../constants";
 
 const paramsSchema = z.object({
   year: z.coerce.number(),
@@ -13,7 +15,7 @@ const paramsSchema = z.object({
   day: z.coerce.number(),
 });
 
-export const meta: Route.MetaFunction = ({ params, data }) => {
+export const meta: Route.MetaFunction = ({ params }) => {
   const date = DateTime.fromObject({
     year: Number(params.year),
     month: Number(params.month),
@@ -26,7 +28,7 @@ export const meta: Route.MetaFunction = ({ params, data }) => {
   ];
 };
 
-export const loader = ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data(
@@ -57,7 +59,20 @@ export const loader = ({ params }: Route.LoaderArgs) => {
       { status: 400 }
     );
   }
+  const url = new URL(request.url);
+  const products = await getProductsByDateRange({
+    startDate: date.startOf("day"),
+    endDate: date.endOf("day"),
+    limit: PAGE_SIZE,
+    page: Number(url.searchParams.get("page")) || 1,
+  });
+  const totalPages = await getProductPagesByDateRange({
+    startDate: date.startOf("day"),
+    endDate: date.endOf("day"),
+  });
   return {
+    products,
+    totalPages,
     ...parsedData,
   };
 };
@@ -97,18 +112,19 @@ export default function DailyLeaderboardPage({
         ) : null}
       </div>
       <div className="space-y-10 w-full max-w-screen-md mx-auto">
-        {Array.from({ length: 10 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            id={`productId-${index}`}
+            key={product.product_id}
+            id={product.product_id.toString()}
             name="productName"
             description="Product Description"
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={loaderData.totalPages} />
     </div>
   );
 }
