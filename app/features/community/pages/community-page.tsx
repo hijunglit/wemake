@@ -14,14 +14,48 @@ import { Input } from "~/common/components/ui/input";
 import { PostCard } from "~/features/products/components/post-card";
 import { getPosts, getTopics } from "../queries";
 import { Suspense } from "react";
+import z from "zod";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Community | wemake" },
   { name: "description", content: "Community page" },
 ];
 
-export const loader = async () => {
-  const [topics, posts] = await Promise.all([getTopics(), getPosts()]);
+// url을 통해서 받는 값는 반시드 검증을 해야한다.
+const searchParamsSchema = z.object({
+  sorting: z.enum(["newest", "popular"]).optional().default("newest"),
+  period: z
+    .enum(["all", "today", "week", "month", "year"])
+    .optional()
+    .default("all"),
+  keyword: z.string().optional(),
+  topic: z.string().optional(),
+});
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const url = new URL(request.url);
+  const { success, data: parsedData } = searchParamsSchema.safeParse(
+    Object.fromEntries(url.searchParams)
+  );
+  if (!success) {
+    throw data(
+      {
+        error_code: "invalid_search_params",
+        message: "Invalid search params",
+      },
+      { status: 400 }
+    );
+  }
+  const [topics, posts] = await Promise.all([
+    getTopics(),
+    getPosts({
+      limit: 20,
+      sorting: parsedData.sorting,
+      period: parsedData.period,
+      keyword: parsedData.keyword,
+      topic: parsedData.topic,
+    }),
+  ]);
   return { topics, posts };
 };
 
@@ -85,7 +119,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
               <Form className="w-2/3">
                 <Input
                   type="text"
-                  name="search"
+                  name="keyword"
                   placeholder="Search for discussions"
                 />
               </Form>
@@ -123,9 +157,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col gap-4 items-start">
             {topics.map((topic) => (
               <Button key={topic.slug} variant="link" asChild className="p-0">
-                <Link to={`/community?category=${topic.slug}`}>
-                  {topic.name}
-                </Link>
+                <Link to={`/community?topic=${topic.slug}`}>{topic.name}</Link>
               </Button>
             ))}
           </div>

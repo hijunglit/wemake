@@ -193,6 +193,159 @@ export type Database = {
         }
         Relationships: []
       }
+      message_room_members: {
+        Row: {
+          created_at: string
+          message_room_id: number
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          message_room_id: number
+          profile_id: string
+        }
+        Update: {
+          created_at?: string
+          message_room_id?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_room_members_message_room_id_message_rooms_message_room"
+            columns: ["message_room_id"]
+            isOneToOne: false
+            referencedRelation: "message_rooms"
+            referencedColumns: ["message_room_id"]
+          },
+          {
+            foreignKeyName: "message_room_members_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      message_rooms: {
+        Row: {
+          created_at: string
+          message_room_id: number
+        }
+        Insert: {
+          created_at?: string
+          message_room_id?: never
+        }
+        Update: {
+          created_at?: string
+          message_room_id?: never
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          message_id: number
+          message_room_id: number | null
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          message_id?: never
+          message_room_id?: number | null
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          message_id?: never
+          message_room_id?: number | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_message_room_id_message_rooms_message_room_id_fk"
+            columns: ["message_room_id"]
+            isOneToOne: false
+            referencedRelation: "message_rooms"
+            referencedColumns: ["message_room_id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_profiles_profile_id_fk"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          notification_id: number
+          post_id: number | null
+          product_id: number | null
+          source_id: string | null
+          target_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+        }
+        Insert: {
+          created_at?: string
+          notification_id?: never
+          post_id?: number | null
+          product_id?: number | null
+          source_id?: string | null
+          target_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+        }
+        Update: {
+          created_at?: string
+          notification_id?: never
+          post_id?: number | null
+          product_id?: number | null
+          source_id?: string | null
+          target_id?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_post_list_view"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "notifications_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "notifications_source_id_profiles_profile_id_fk"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "notifications_target_id_profiles_profile_id_fk"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       post_replies: {
         Row: {
           content: string
@@ -298,6 +451,7 @@ export type Database = {
           title: string
           topic_id: number | null
           updated_at: string
+          upvotes: number | null
         }
         Insert: {
           content: string
@@ -307,6 +461,7 @@ export type Database = {
           title: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number | null
         }
         Update: {
           content?: string
@@ -316,6 +471,7 @@ export type Database = {
           title?: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number | null
         }
         Relationships: [
           {
@@ -579,6 +735,7 @@ export type Database = {
           post_id: number | null
           title: string | null
           topic: string | null
+          topic_slug: string | null
           upvotes: number | null
         }
         Relationships: []
@@ -590,6 +747,7 @@ export type Database = {
     Enums: {
       job_type: "full-time" | "part-time" | "freelance" | "internship"
       location: "remote" | "in-person" | "hybrid"
+      notification_type: "follow" | "review" | "reply" | "mention"
       product_stage: "idea" | "prototype" | "mvp" | "product"
       role:
         | "developer"
@@ -734,6 +892,7 @@ export const Constants = {
     Enums: {
       job_type: ["full-time", "part-time", "freelance", "internship"],
       location: ["remote", "in-person", "hybrid"],
+      notification_type: ["follow", "review", "reply", "mention"],
       product_stage: ["idea", "prototype", "mvp", "product"],
       role: ["developer", "designer", "marketer", "founder", "product-manager"],
       salary_range: [
