@@ -8,18 +8,14 @@ import {
 import { ChevronRightIcon } from "lucide-react";
 
 interface CategoryCardProps {
-  categoryId: string;
+  id: number;
   name: string;
   description: string;
 }
 
-export function CategoryCard({
-  categoryId,
-  name,
-  description,
-}: CategoryCardProps) {
+export function CategoryCard({ id, name, description }: CategoryCardProps) {
   return (
-    <Link to={`/products/categories/${categoryId}`} className="block">
+    <Link to={`/products/categories/${id}`} className="block">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

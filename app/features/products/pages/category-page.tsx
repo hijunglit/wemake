@@ -2,6 +2,12 @@ import type { Route } from "./+types/category-page";
 import { Hero } from "~/common/components/hero";
 import { ProductCard } from "../components/product-card";
 import ProductPagination from "~/common/components/product-pagination";
+import {
+  getCategory,
+  getCategoryPages,
+  getProductByCategory,
+} from "../queries";
+import z from "zod";
 
 export const meta = ({ params }: Route.MetaArgs) => {
   return [
@@ -10,7 +16,26 @@ export const meta = ({ params }: Route.MetaArgs) => {
   ];
 };
 
-export default function CategoryPage() {
+const paramsSchema = z.object({
+  // 이렇게 하면 url로부터 받는 string을 number 타입으로 변환시켜준다.
+  category: z.coerce.number(),
+});
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") || 1;
+  const { data, success } = paramsSchema.safeParse(params);
+  if (!success) throw new Response("Invalid category", { status: 400 });
+  const category = await getCategory(data.category);
+  const products = await getProductByCategory({
+    id: data.category,
+    page: Number(page),
+  });
+  const totalPage = await getCategoryPages(Number(data.category));
+  return { category, products, totalPage };
+};
+
+export default function CategoryPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-20">
       <Hero
@@ -18,18 +43,18 @@ export default function CategoryPage() {
         subtitle={`Tools for developers to build their products`}
       />
       <div className="space-y-10 w-full max-w-screen-md mx-auto">
-        {Array.from({ length: 10 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            id={`productId-${index}`}
-            name="productName"
-            description="Product Description"
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            id={product.product_id}
+            name={product.name}
+            description={product.description}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={loaderData.totalPage} />
     </div>
   );
 }
