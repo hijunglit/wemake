@@ -13,9 +13,9 @@ interface ProductCardProps {
   id: number | string;
   name: string;
   description: string;
-  reviewsCount: string;
-  viewsCount: string;
-  votesCount: string;
+  reviewsCount: string | number;
+  viewsCount: string | number;
+  votesCount: string | number;
 }
 
 export function ProductCard({
