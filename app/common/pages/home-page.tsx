@@ -11,6 +11,8 @@ import { getProductsByDateRange } from "~/features/products/queries";
 import { DateTime } from "luxon";
 import { getPosts } from "~/features/community/queries";
 import { getGptIdeas } from "~/features/ideas/queries";
+import { getJobs } from "~/features/jobs/queries";
+import { getTeams } from "~/features/teams/queries";
 
 export const meta: MetaFunction = () => {
   return [
@@ -30,7 +32,9 @@ export const loader = async () => {
     sorting: "newest",
   });
   const ideas = await getGptIdeas({ limit: 7 });
-  return { products, posts, ideas };
+  const jobs = await getJobs({ limit: 11 });
+  const teams = await getTeams({ limit: 7 });
+  return { products, posts, ideas, jobs, teams };
 };
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
@@ -97,7 +101,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <Link to="/ideas">Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {loaderData.ideas.map((idea, index) => (
+        {loaderData.ideas.map((idea) => (
           <IdeaCard
             key={idea.gpt_idea_id}
             id={idea.gpt_idea_id}
@@ -121,18 +125,18 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <Link to="/jobs">Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.jobs.map((job) => (
           <JobCard
-            key={`jobId-${index}`}
-            id={`jobId-${index}`}
-            company="Tesla"
-            companyLogoUrl="https://github.com/facebook.png"
-            companyHq="San Francisco, CA"
-            title="Software Engineer"
-            postedAt="12 hours ago"
-            type="Full-time"
-            positionLocation="Remote"
-            salary="$100,000 - $120,000"
+            key={job.job_id}
+            id={job.job_id}
+            company={job.company_name}
+            companyLogoUrl={job.company_logo}
+            companyHq={job.location}
+            title={job.position}
+            postedAt={job.created_at}
+            type={job.job_type}
+            positionLocation={job.location}
+            salary={job.salary_range}
           />
         ))}
       </div>
@@ -148,18 +152,14 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <Link to="/teams">Explore all teams &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 7 }).map((_, index) => (
+        {loaderData.teams.map((team, index) => (
           <TeamCard
-            key={`teamId-${index}`}
-            id={`teamId-${index}`}
-            leaderUsername="lynn"
-            leaderAvatarUrl="https://github.com/inthetiger.png"
-            positions={[
-              "React Developer",
-              "Backend Developer",
-              "Product Manager",
-            ]}
-            projectDescription="a new social media platform"
+            key={team.team_id}
+            id={team.team_id}
+            leaderUsername={team.team_leader.username}
+            leaderAvatarUrl={team.team_leader.avatar}
+            positions={team.roles.split(",")}
+            projectDescription={team.product_description}
           />
         ))}
       </div>
