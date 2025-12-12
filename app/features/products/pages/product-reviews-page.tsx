@@ -9,6 +9,9 @@ import {
 } from "~/common/components/ui/dialog";
 import { ReviewCard } from "~/features/products/components/review-card";
 import { CreateReviewDialog } from "../components/create-review-dialog";
+import { useOutletContext } from "react-router";
+import type { Route } from "./+types/product-reviews-page";
+import { getReviews } from "../queries";
 
 export const meta = () => {
   return [
@@ -17,28 +20,38 @@ export const meta = () => {
   ];
 };
 
-export default function ProductReviewsPage() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const reviews = await getReviews(params.productId);
+  return { reviews };
+};
+
+export default function ProductReviewsPage({
+  loaderData,
+}: Route.ComponentProps) {
+  const { review_count } = useOutletContext<{ review_count: string }>();
   return (
     <Dialog>
       <div className="space-y-10 max-w-screen-md">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">10 Reviews</h2>
+          <h2 className="text-2xl font-bold">
+            {review_count} {review_count === "1" ? "review" : "reviews"}
+          </h2>
           <DialogTrigger>
             <Button variant="secondary">Write a Review</Button>
           </DialogTrigger>
         </div>
         <div className="space-y-20">
-          {Array.from({ length: 10 }).map((_, i) => {
+          {loaderData.reviews.map((review) => {
             return (
               <ReviewCard
-                key={i}
-                name="John Doe"
-                username="username"
+                key={review.review_id}
+                username={review.user.username}
+                handle={review.user.name}
                 avatarFallback="N"
-                avatarImage="https://github.com/meta.png"
-                rating={5}
-                content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,"
-                date="10 days ago"
+                avatarUrl={review.user.avatar}
+                rating={review.rating}
+                content={review.review}
+                createdAt={review.created_at}
               />
             );
           })}

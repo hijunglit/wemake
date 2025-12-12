@@ -2,8 +2,20 @@ import { Badge } from "~/common/components/ui/badge";
 import type { Route } from "./+types/job-page";
 import { DotIcon } from "lucide-react";
 import { Button } from "~/common/components/ui/button";
+import { getJobById } from "../queries";
+import z from "zod";
+import { DateTime } from "luxon";
 
-export default function JobPage() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const job = await getJobById(params.jobId);
+  return { job };
+};
+
+export const paramsSchema = z.object({
+  jobId: z.string(),
+});
+
+export default function JobPage({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <div className="bg-gradient-to-tr from-primary/80 to-primary/10 h-60 w-full rounded-lg"></div>
@@ -11,33 +23,25 @@ export default function JobPage() {
         <div className="col-span-4 space-y-10">
           <div>
             <div className="size-40 bg-white rounded-full overflow-hidden relative left-10">
-              <img
-                src="https://github.com/facebook.png"
-                className="object-cover"
-              />
+              <img src={loaderData.job.company_logo} className="object-cover" />
             </div>
-            <h1 className="text-4xl font-bold">Software Engineer</h1>
-            <h4 className="text-lg text-muted-foreground">Meta Inc.</h4>
+            <h1 className="text-4xl font-bold">{loaderData.job.position}</h1>
+            <h4 className="text-lg text-muted-foreground">
+              {loaderData.job.company_name}
+            </h4>
           </div>
-          <div className="flex gap-2">
-            <Badge variant="secondary">Full-time</Badge>
-            <Badge variant="secondary">Remote</Badge>
+          <div className="flex gap-2 capitalize">
+            <Badge variant="secondary">{loaderData.job.job_type}</Badge>
+            <Badge variant="secondary">{loaderData.job.location}</Badge>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-3xl font-bold">Overview</h4>
-            <p className="text-lg">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-              quos.
-            </p>
+            <p className="text-lg">{loaderData.job.overview}</p>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-3xl font-bold">Responsibilities</h4>
             <ul className="list-disc list-inside">
-              {[
-                "Develop and maintain web applications using React and Node.js",
-                "Implement new features and improve existing code",
-                "Debug and fix bugs in the codebase",
-              ].map((item) => (
+              {loaderData.job.responsibilities.split(",").map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -45,11 +49,7 @@ export default function JobPage() {
           <div className="space-y-2.5">
             <h4 className="text-3xl font-bold">Qualifications</h4>
             <ul className="list-disc list-inside">
-              {[
-                "Bachelor's degree in Computer Science",
-                "3+ years of experience in software development",
-                "Strong understanding of JavaScript and React",
-              ].map((item) => (
+              {loaderData.job.qualifications.split(",").map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -57,28 +57,15 @@ export default function JobPage() {
           <div className="space-y-2.5">
             <h4 className="text-3xl font-bold">Benefits</h4>
             <ul className="list-disc list-inside">
-              {["Health insurance", "Dental insurance", "Vision insurance"].map(
-                (item) => (
-                  <li key={item}>{item}</li>
-                )
-              )}
+              {loaderData.job.benefits.split(",").map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-3xl font-bold">Skills</h4>
             <ul className="list-disc list-inside">
-              {[
-                "React",
-                "Node.js",
-                "TypeScript",
-                "JavaScript",
-                "HTML",
-                "CSS",
-                "Git",
-                "GitHub",
-                "Docker",
-                "Kubernetes",
-              ].map((item) => (
+              {loaderData.job.skills.split(",").map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -87,19 +74,25 @@ export default function JobPage() {
         <div className="col-span-2 mt-32 space-y-5 sticky top-20 p-6 border rounded-lg">
           <div className="flex flex-col">
             <span>Avg.salary</span>
-            <span className="text-2xl font-medium">&100,000 - $120,000</span>
+            <span className="text-2xl font-medium">
+              {loaderData.job.salary_range}
+            </span>
           </div>
           <div className="flex flex-col">
             <span>Location</span>
-            <span className="text-2xl font-medium">Remote</span>
+            <span className="text-2xl font-medium capitalize">
+              {loaderData.job.location}
+            </span>
           </div>
           <div className="flex flex-col">
             <span>Type</span>
-            <span className="text-2xl font-medium">Full Time</span>
+            <span className="text-2xl font-medium capitalize">
+              {loaderData.job.job_type}
+            </span>
           </div>
           <div className="flex">
             <span className="text-sm text-muted-foreground">
-              Posted 2days ago
+              {DateTime.fromISO(loaderData.job.created_at).toRelative()}
             </span>
             <DotIcon className="size-4" />
             <span className="text-sm text-muted-foreground">395 views</span>
