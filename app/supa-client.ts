@@ -1,8 +1,13 @@
-import { createClient } from "@supabase/supabase-js";
+import {
+  createBrowserClient,
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader,
+} from "@supabase/ssr";
 import type { MergeDeep, SetFieldType, SetNonNullable } from "type-fest";
 import type { Database as supabaseDatabase } from "database.types";
 
-type Database = MergeDeep<
+export type Database = MergeDeep<
   supabaseDatabase,
   {
     public: {
@@ -31,8 +36,37 @@ type Database = MergeDeep<
   }
 >;
 
-const client = createClient<Database>(
+export const browserClient = createBrowserClient<Database>(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_PUBLIC_KEY!
 );
-export default client;
+
+export const makeSSRClient = (request: Request) => {
+  const headers = new Headers();
+  const serverSideClient = createServerClient<Database>(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_PUBLIC_KEY!,
+    {
+      cookies: {
+        getAll() {
+          const cookies = parseCookieHeader(
+            request.headers.get("Cookie") ?? ""
+          );
+          return cookies.map(({ name, value }) => ({
+            name,
+            value: value ?? "",
+          }));
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            headers.append(
+              "Set-Cookie",
+              serializeCookieHeader(name, value, options)
+            )
+          );
+        },
+      },
+    }
+  );
+  return { client: serverSideClient, headers };
+};

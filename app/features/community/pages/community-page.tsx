@@ -15,6 +15,7 @@ import { PostCard } from "~/features/products/components/post-card";
 import { getPosts, getTopics } from "../queries";
 import { Suspense } from "react";
 import z from "zod";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Community | wemake" },
@@ -33,6 +34,7 @@ const searchParamsSchema = z.object({
 });
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const url = new URL(request.url);
   const { success, data: parsedData } = searchParamsSchema.safeParse(
     Object.fromEntries(url.searchParams)
@@ -47,8 +49,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     );
   }
   const [topics, posts] = await Promise.all([
-    getTopics(),
-    getPosts({
+    getTopics(client),
+    getPosts(client, {
       limit: 20,
       sorting: parsedData.sorting,
       period: parsedData.period,

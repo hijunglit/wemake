@@ -8,6 +8,7 @@ import {
   getProductByCategory,
 } from "../queries";
 import z from "zod";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta = ({ params }: Route.MetaArgs) => {
   return [
@@ -22,16 +23,19 @@ const paramsSchema = z.object({
 });
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
   const { data, success } = paramsSchema.safeParse(params);
   if (!success) throw new Response("Invalid category", { status: 400 });
-  const category = await getCategory(data.category);
-  const products = await getProductByCategory({
+  const category = await getCategory(client, { id: data.category });
+  const products = await getProductByCategory(client, {
     id: data.category,
     page: Number(page),
   });
-  const totalPage = await getCategoryPages(Number(data.category));
+  const totalPage = await getCategoryPages(client, {
+    id: Number(data.category),
+  });
   return { category, products, totalPage };
 };
 

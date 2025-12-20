@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
-import client from "~/supa-client";
 import { PAGE_SIZE } from "./constants";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "~/supa-client";
 
 const product_list_select = `
         product_id,
@@ -10,17 +11,20 @@ const product_list_select = `
         views:stats->>views,
         reviews:stats->>reviews`;
 
-export const getProductsByDateRange = async ({
-  startDate,
-  endDate,
-  limit,
-  page = 1,
-}: {
-  startDate: DateTime;
-  endDate: DateTime;
-  limit: number;
-  page?: number;
-}) => {
+export const getProductsByDateRange = async (
+  client: SupabaseClient<Database>,
+  {
+    startDate,
+    endDate,
+    limit,
+    page = 1,
+  }: {
+    startDate: DateTime;
+    endDate: DateTime;
+    limit: number;
+    page?: number;
+  }
+) => {
   const { data, error } = await client
     .from("products")
     .select(product_list_select)
@@ -32,13 +36,16 @@ export const getProductsByDateRange = async ({
   return data;
 };
 
-export const getProductPagesByDateRange = async ({
-  startDate,
-  endDate,
-}: {
-  startDate: DateTime;
-  endDate: DateTime;
-}) => {
+export const getProductPagesByDateRange = async (
+  client: SupabaseClient<Database>,
+  {
+    startDate,
+    endDate,
+  }: {
+    startDate: DateTime;
+    endDate: DateTime;
+  }
+) => {
   const { count, error } = await client
     .from("products")
     .select(`product_id`, { count: "exact", head: true })
@@ -49,7 +56,7 @@ export const getProductPagesByDateRange = async ({
   return Math.ceil(count / PAGE_SIZE);
 };
 
-export const getCategories = async () => {
+export const getCategories = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client
     .from("categories")
     .select(`category_id, name, description`);
@@ -57,7 +64,10 @@ export const getCategories = async () => {
   return data;
 };
 
-export const getCategory = async (id: number) => {
+export const getCategory = async (
+  client: SupabaseClient<Database>,
+  { id }: { id: number }
+) => {
   const { data, error } = await client
     .from("categories")
     .select("*")
@@ -70,13 +80,16 @@ export const getCategory = async (id: number) => {
   return data;
 };
 
-export const getProductByCategory = async ({
-  id,
-  page,
-}: {
-  id: number;
-  page: number;
-}) => {
+export const getProductByCategory = async (
+  client: SupabaseClient<Database>,
+  {
+    id,
+    page,
+  }: {
+    id: number;
+    page: number;
+  }
+) => {
   const { data, error } = await client
     .from("products")
     .select(product_list_select)
@@ -86,7 +99,10 @@ export const getProductByCategory = async ({
   return data;
 };
 
-export const getCategoryPages = async (id: number) => {
+export const getCategoryPages = async (
+  client: SupabaseClient<Database>,
+  { id }: { id: number }
+) => {
   const { count, error } = await client
     .from("products")
     .select(`product_id`, { count: "exact", head: true })
@@ -96,13 +112,16 @@ export const getCategoryPages = async (id: number) => {
   return Math.ceil(count / PAGE_SIZE);
 };
 
-export const getProductBySearch = async ({
-  query,
-  page,
-}: {
-  query: string;
-  page: number;
-}) => {
+export const getProductBySearch = async (
+  client: SupabaseClient<Database>,
+  {
+    query,
+    page,
+  }: {
+    query: string;
+    page: number;
+  }
+) => {
   const { data, error } = await client
     .from("products")
     .select(product_list_select)
@@ -115,7 +134,10 @@ export const getProductBySearch = async ({
   return data;
 };
 
-export const getPagesBySearch = async ({ query }: { query: string }) => {
+export const getPagesBySearch = async (
+  client: SupabaseClient<Database>,
+  { query }: { query: string }
+) => {
   const { count, error } = await client
     .from("products")
     .select(`product_id`, { count: "exact", head: true })
@@ -128,7 +150,10 @@ export const getPagesBySearch = async ({ query }: { query: string }) => {
   return Math.ceil(count / PAGE_SIZE);
 };
 
-export const getProductById = async (productId: string) => {
+export const getProductById = async (
+  client: SupabaseClient<Database>,
+  productId: string
+) => {
   const { data, error } = await client
     .from("product_overview_view")
     .select("*")
@@ -138,7 +163,10 @@ export const getProductById = async (productId: string) => {
   return data;
 };
 
-export const getReviews = async (productId: string) => {
+export const getReviews = async (
+  client: SupabaseClient<Database>,
+  productId: string
+) => {
   const { data, error } = await client
     .from("reviews")
     .select(

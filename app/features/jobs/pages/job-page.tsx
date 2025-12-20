@@ -5,9 +5,14 @@ import { Button } from "~/common/components/ui/button";
 import { getJobById } from "../queries";
 import z from "zod";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const job = await getJobById(params.jobId);
+export const loader = async (
+  { request }: Route.LoaderArgs,
+  { params }: Route.LoaderArgs
+) => {
+  const { client, headers } = makeSSRClient(request);
+  const job = await getJobById(client, { jobId: params.jobId });
   return { job };
 };
 

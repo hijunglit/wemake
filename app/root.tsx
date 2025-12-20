@@ -63,7 +63,7 @@ export default function App() {
     >
       {pathname.includes("/auth") ? null : (
         <Navigation
-          isLoggedIn={false}
+          isLoggedIn={true}
           hasNotifications={true}
           hasMessages={true}
         />

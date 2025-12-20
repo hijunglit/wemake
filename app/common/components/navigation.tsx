@@ -248,7 +248,7 @@ export default function Navigation({
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/profile">
                     <UserIcon className="size-4 mr-2" />
-                    Dashboard
+                    Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">

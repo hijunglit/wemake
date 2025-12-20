@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils";
 import { getJobs } from "../queries";
 import { z } from "zod";
 import { JobCard } from "~/features/products/components/job-card";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -22,6 +23,7 @@ const searchParamsSchema = z.object({
 });
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const url = new URL(request.url);
   const { success, data: parsedData } = searchParamsSchema.safeParse(
     Object.fromEntries(url.searchParams)
@@ -35,7 +37,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       { status: 400 }
     );
   }
-  const jobs = await getJobs({
+  const jobs = await getJobs(client, {
     limit: 40,
     location: parsedData.location,
     type: parsedData.type,
@@ -47,9 +49,14 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export default function JobsPage({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const onFilterClick = (key: string, value: string) => {
+    if (searchParams.get(key) === value) {
+      searchParams.delete(key);
+      return setSearchParams(searchParams);
+    }
     searchParams.set(key, value);
     setSearchParams(searchParams);
   };
+
   return (
     <div className="space-y-20">
       <Hero title="Jobs" subtitle="Companies looking for makers" />
