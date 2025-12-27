@@ -1,10 +1,28 @@
 import { Button } from "~/common/components/ui/button";
 import type { Route } from "./+types/login-page";
-import { Form, Link } from "react-router";
+import { Form, Link, useNavigation } from "react-router";
 import InputPair from "~/common/components/input-pair";
 import AuthButtons from "../components/auth-buttons";
+import { LoaderCircle } from "lucide-react";
 
-export default function LoginPage() {
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Login | wemake" }];
+};
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+  const formData = await request.formData();
+  // input 태그의 name 값 참조
+  const email = formData.get("email");
+  const password = formData.get("password");
+  return {
+    message: "success",
+  };
+};
+
+export default function LoginPage({ actionData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   return (
     <div className="flex flex-col relative items-center justify-center h-full">
       <Button variant={"ghost"} asChild className="absolute right-8 top-8">
@@ -12,7 +30,7 @@ export default function LoginPage() {
       </Button>
       <div className="flex flex-col items-center justify-center w-full max-w-md gap-10">
         <h1 className="text-2xl font-semibold">Log in to your account</h1>
-        <Form className="w-full space-y-5">
+        <Form className="w-full space-y-5" method="post">
           <InputPair
             id="email"
             label="Email"
@@ -32,8 +50,15 @@ export default function LoginPage() {
             placeholder="********"
           />
           <Button type="submit" className="w-full">
-            Log in
+            {isSubmitting ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Log in"
+            )}
           </Button>
+          {actionData?.message && (
+            <p className="text-sm text-red-500">{actionData.message}</p>
+          )}
         </Form>
         <AuthButtons />
       </div>
