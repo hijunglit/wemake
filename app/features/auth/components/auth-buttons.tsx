@@ -18,7 +18,7 @@ export default function AuthButtons() {
       </div>
       <div className="w-full flex flex-col gap-2">
         <Button variant="outline" className="w-full" asChild>
-          <Link to="/auth/social/kakaotalk/start">
+          <Link to="/auth/social/kakao/start">
             <MessageCircleIcon className="w-4 h-4" />
             Kakao talk
           </Link>
