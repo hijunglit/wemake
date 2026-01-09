@@ -128,9 +128,9 @@ const menus = [
     to: "/teams",
     items: [
       {
-        name: "",
-        description: "",
-        to: "",
+        name: "All Teams",
+        description: "See all teams in our community",
+        to: "/teams",
       },
       {
         name: "Create a team",
