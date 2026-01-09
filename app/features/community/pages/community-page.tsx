@@ -127,7 +127,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
               </Form>
             </div>
             <Button asChild>
-              <Link to={`/community/new`}>Create Discussion</Link>
+              <Link to={`/community/submit`}>Create Discussion</Link>
             </Button>
           </div>
           <Suspense fallback={<div>Loading...</div>}>
