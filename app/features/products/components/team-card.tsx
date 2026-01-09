@@ -14,7 +14,7 @@ import {
 import { Button } from "~/common/components/ui/button";
 
 interface TeamCardProps {
-  id: number;
+  id: string;
   leaderUsername: string;
   leaderAvatarUrl: string | null;
   positions: string[];
