@@ -68,7 +68,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
   const sorting = searchParams.get("sorting") || "newest";
   const period = searchParams.get("period") || "all";
   return (
-    <div>
+    <div className="space-y-20">
       <Hero title="Community" subtitle="Share your ideas and get feedback" />
       <div className="grid grid-cols-6 items-start gap-40">
         <div className="col-span-4 space-y-10">
