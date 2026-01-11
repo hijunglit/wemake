@@ -5,21 +5,17 @@ import {
   CardHeader,
   CardTitle,
 } from "~/common/components/ui/card";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "~/common/components/ui/avatar";
+import { Avatar, AvatarImage } from "~/common/components/ui/avatar";
+import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Button } from "~/common/components/ui/button";
 import { ChevronUpIcon, DotIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { DateTime } from "luxon";
 
 interface PostCardProps {
-  id: number;
+  id: string;
   title: string;
   author: string;
-  authorAvatarUrl: string | null;
+  authorAvatarUrl: string;
   category: string;
   postedAt: string;
   expanded?: boolean;
@@ -44,7 +40,7 @@ export function PostCard({
           expanded ? "flex flex-row items-center justify-between" : ""
         )}
       >
-        <CardHeader className="flex flex-row items-center gap-2 w-full">
+        <CardHeader className="flex flex-row items-center gap-2">
           <Avatar className="size-14">
             <AvatarFallback>{author[0]}</AvatarFallback>
             {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
@@ -56,8 +52,7 @@ export function PostCard({
                 {author} on {category}
               </span>
               <DotIcon className="w-4 h-4" />
-              {/* ISO형식은 postgreSQL에서 DATE를 저장하는 방식이다. */}
-              <span>{DateTime.fromISO(postedAt).toRelative()}</span>
+              <span>{postedAt}</span>
             </div>
           </div>
         </CardHeader>

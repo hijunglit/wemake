@@ -2,7 +2,6 @@ import { ProductCard } from "~/features/products/components/product-card";
 import { Button } from "../components/ui/button";
 import { data, Link } from "react-router";
 import type { MetaFunction } from "react-router";
-import { PostCard } from "~/features/products/components/post-card";
 import { IdeaCard } from "~/features/products/components/idea-card";
 import { JobCard } from "~/features/products/components/job-card";
 import { TeamCard } from "~/features/products/components/team-card";
@@ -14,6 +13,7 @@ import { getGptIdeas } from "~/features/ideas/queries";
 import { getJobs } from "~/features/jobs/queries";
 import { getTeams } from "~/features/teams/queries";
 import { makeSSRClient } from "~/supa-client";
+import { PostCard } from "~/features/community/components/post-card";
 
 export const meta: MetaFunction = () => {
   return [
@@ -57,14 +57,14 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           </Button>
         </div>
         {loaderData.products.map((product, index) => (
-          <ProductCard
-            key={product.product_id}
-            id={product.product_id}
-            name={product.name}
-            description={product.tagline}
-            reviewsCount={product.reviews}
-            viewsCount={product.views}
-            votesCount={product.upvotes}
+          <PostCard
+            key={`postId-${index}`}
+            id={`postId-${index}`}
+            title="What is the best productivity tool?"
+            author="Nico"
+            authorAvatarUrl="https://github.com/apple.png"
+            category="Productivity"
+            postedAt="12 hours ago"
           />
         ))}
       </div>
@@ -82,14 +82,13 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         </div>
         {loaderData.posts.map((post) => (
           <PostCard
-            key={post.post_id}
-            id={post.post_id}
-            title={post.title}
-            author={post.author}
-            authorAvatarUrl={post.author_avatar}
-            category={post.topic}
-            postedAt={post.created_at}
-            votesCount={post.upvotes}
+            key={`postId-${post.post_id}`}
+            id={`postId-${post.post_id}`}
+            title="What is the best productivity tool?"
+            author="Nico"
+            authorAvatarUrl="https://github.com/apple.png"
+            category="Productivity"
+            postedAt="12 hours ago"
           />
         ))}
       </div>
@@ -158,12 +157,16 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         </div>
         {loaderData.teams.map((team, index) => (
           <TeamCard
-            key={team.team_id}
-            id={team.team_id}
-            leaderUsername={team.team_leader.username}
-            leaderAvatarUrl={team.team_leader.avatar}
-            positions={team.roles.split(",")}
-            projectDescription={team.product_description}
+            key={`teamId-${index}`}
+            id={`teamId-${index}`}
+            leaderUsername="lynn"
+            leaderAvatarUrl="https://github.com/inthetiger.png"
+            positions={[
+              "React Developer",
+              "Backend Developer",
+              "Product Manager",
+            ]}
+            projectDescription="a new social media platform"
           />
         ))}
       </div>
