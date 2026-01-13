@@ -1,6 +1,6 @@
 import { Hero } from "~/common/components/hero";
 import type { Route } from "./+types/ideas-page";
-import { IdeaCard } from "~/features/products/components/idea-card";
+import { IdeaCard } from "~/features/ideas/components/idea-card";
 import { getGptIdeas } from "../queries";
 import { makeSSRClient } from "~/supa-client";
 
@@ -23,7 +23,7 @@ export default function IdeasPage({ loaderData }: Route.ComponentProps) {
         {loaderData.ideas.map((idea, index) => (
           <IdeaCard
             key={idea.gpt_idea_id}
-            id={idea.gpt_idea_id}
+            id={idea.gpt_idea_id + ""}
             title={idea.idea}
             viewsCount={idea.views}
             postedAt={idea.created_at}

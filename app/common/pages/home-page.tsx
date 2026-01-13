@@ -2,7 +2,7 @@ import { ProductCard } from "~/features/products/components/product-card";
 import { Button } from "../components/ui/button";
 import { data, Link } from "react-router";
 import type { MetaFunction } from "react-router";
-import { IdeaCard } from "~/features/products/components/idea-card";
+import { IdeaCard } from "~/features/ideas/components/idea-card";
 import { JobCard } from "~/features/products/components/job-card";
 import { TeamCard } from "~/features/products/components/team-card";
 import type { Route } from "./+types/home-page";
@@ -107,7 +107,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         {loaderData.ideas.map((idea) => (
           <IdeaCard
             key={idea.gpt_idea_id}
-            id={idea.gpt_idea_id}
+            id={idea.gpt_idea_id + ""}
             title={idea.idea}
             viewsCount={idea.views}
             postedAt={idea.created_at}
