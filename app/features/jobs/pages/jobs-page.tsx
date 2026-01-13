@@ -17,8 +17,12 @@ export const meta: Route.MetaFunction = () => {
 };
 
 const searchParamsSchema = z.object({
-  type: z.enum(JOB_TYPES.map((type) => type.value)).optional(),
-  location: z.enum(LOCATION_TYPES.map((type) => type.value)).optional(),
+  type: z
+    .enum(JOB_TYPES.map((type) => type.value) as [string, ...string[]])
+    .optional(),
+  location: z
+    .enum(LOCATION_TYPES.map((type) => type.value) as [string, ...string[]])
+    .optional(),
   salary: z.enum(SALARY_RANGE).optional(),
 });
 
